@@ -1,0 +1,41 @@
+<launch>
+
+      <arg name="num_p1" default="600" />
+      <arg name="num_p2" default="2400" />
+      <arg name="baseline" default="0.234" />
+
+
+  <node name="sgbm_F" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+        <remap from ="/image_left" to="/up/image/F" />
+        <remap from ="/image_right" to="/down/image/F" />
+        <param name="p1"   value="$(arg num_p1)" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+        <param name="p2"   value="num_p2" />
+  </node>
+
+  <node name="sgbm_R" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+	<remap from ="/image_left" to="/up/image/R" />
+	<remap from ="/image_right" to="/down/image/R" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+	<param name="p1"   value="$(arg num_p1)" />
+   	<param name="p2"   value="num_p2" />
+  </node>
+
+
+  <node name="sgbm_B" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+        <remap from ="/image_left" to="/up/image/B" />
+        <remap from ="/image_right" to="/down/image/B" />
+        <param name="baseline"  type="double"    value="$(arg baseline)" />
+        <param name="p1"   value="$(arg num_p1)" />
+        <param name="p2"   value="num_p2" />
+  </node>
+
+  <node name="sgbm_L" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+        <remap from ="/image_left" to="/up/image/L" />
+        <remap from ="/image_right" to="/down/image/L" />
+        <param name="baseline" type="double"   value="$(arg baseline)" />
+        <param name="p1"   value="$(arg num_p1)" />
+        <param name="p2"   value="num_p2" />
+  </node>
+
+</launch>

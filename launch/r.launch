@@ -1,0 +1,15 @@
+<launch>
+
+      <arg name="num_p1" default="700" />
+      <arg name="num_p2" default="2100" />
+ 
+  <node name="sgbm_R" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+	<remap from ="/image_left" to="/up/image/R" />
+	<remap from ="/image_right" to="/down/image/R" />
+	<param name="p1"   value="num_p1" />
+   	<param name="p2"   value="num_p2" />
+  </node>
+
+ 
+
+</launch>
