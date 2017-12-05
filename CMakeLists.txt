@@ -15,10 +15,10 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
 )
 
-include(/home/nvidia/lib/opencv_arm/OpenCVConfig.cmake)
+find_package( CUDA REQUIRED )
+include(/home/gao/lib/opencv-3.3.1/build/OpenCVConfig.cmake)
 #find_package( OpenCV REQUIRED)
 find_package( Eigen3 REQUIRED)
-find_package( CUDA REQUIRED )
 
 catkin_package(
    CATKIN_DEPENDS roscpp rospy
@@ -38,6 +38,8 @@ message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 message(STATUS "Eigen library path: ${EIGEN3_INCLUDE_DIR}")
 
+message(STATUS "CUDA include path: ${CUDA_INCLUDE_DIRS}")
+
 set(
     CUDA_NVCC_FLAGS
     ${CUDA_NVCC_FLAGS};
@@ -46,8 +48,8 @@ set(
 #    -gencode=arch=compute_35,code=sm_35
 #    -gencode=arch=compute_50,code=sm_50
 #    -gencode=arch=compute_52,code=sm_52
-#    -gencode=arch=compute_53,code=sm_53
-    -gencode=arch=compute_62,code=sm_62
+#    -gencode=arch=compute_53,code=sm_53    # TX1
+    -gencode=arch=compute_62,code=sm_62    # TX2
     )
 
 cuda_add_executable( sgbm_ros_node

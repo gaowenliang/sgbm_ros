@@ -34,8 +34,10 @@
 #include <vector>
 
 #include "disparity_method.h"
-#include "sgbm_ros/backward.hpp"
-#include "sgbm_ros/transport_util.h"
+
+#include "../include/sgbm_ros/backward.hpp"
+#include "../include/sgbm_ros/transport_util.h"
+
 
 using namespace std;
 using namespace Eigen;
@@ -55,10 +57,6 @@ bool is_sync_image_ready_ = false;
 const int limit_left   = 30;
 const int limit_right  = 230;
 const double max_depth = 20.0;
-const float _fx        = 204.5;
-const float _fy        = 204.5;
-const float _cx        = 130.0;
-const float _cy        = 204.5;
 
 int _p1, _p2;
 float fx_l, fx_r;
@@ -71,10 +69,13 @@ float cy_l, cy_r;
 void
 imageProcessCallback( const sensor_msgs::ImageConstPtr& left_image_msg, const sensor_msgs::ImageConstPtr& right_image_msg )
 {
-    image_left_            = cv_bridge::toCvCopy( left_image_msg, "mono8" )->image;
-    image_right_           = cv_bridge::toCvCopy( right_image_msg, "mono8" )->image;
-    last_sync_image_stamp_ = left_image_msg->header.stamp;
-    is_sync_image_ready_   = true;
+  //    image_left_ = matFromImage(left_image_msg).clone();
+  //    image_right_ = matFromImage(right_image_msg).clone();
+
+  image_left_            = cv_bridge::toCvCopy( left_image_msg, "mono8" )->image;
+  image_right_           = cv_bridge::toCvCopy( right_image_msg, "mono8" )->image;
+  last_sync_image_stamp_ = left_image_msg->header.stamp;
+  is_sync_image_ready_   = true;
 }
 
 cv::Mat
@@ -115,7 +116,7 @@ void
 stereo_sgbm( )
 {
     if ( !is_sync_image_ready_ )
-        return;
+      return;
     // Compute
     ros::Time time_start = ros::Time::now( );
     float elapsed_time_ms;
@@ -142,23 +143,30 @@ main( int argc, char** argv )
     ros::init( argc, argv, "sgbm_ros_node" );
     ros::NodeHandle nh( "~" );
 
-    fx_l = _fx * scale_;
-    fy_l = _fy * scale_;
-
-    fx_r = _fx * scale_;
-    fy_r = _fy * scale_;
-
-    cx_l = cx_r = _cx * scale_;
-    cy_l = cy_r = _cy * scale_;
-
     double _baseline;
     int run_rate;
+    double fx,fy,cx,cy;
     nh.param( "p1", _p1, 600 );
     nh.param( "p2", _p2, 2400 );
     nh.param( "baseline", _baseline, 0.24 );
     nh.param( "rate", run_rate, 10 );
+    nh.param( "fx", fx, 100.0 );
+    nh.param( "fy", fy, 100.0 );
+    nh.param( "cx", cx, 100.0 );
+    nh.param( "cy", cy, 100.0 );
 
+    fx_l = fx * scale_;
+    fy_l = fy * scale_;
+    fx_r = fx * scale_;
+    fy_r = fy * scale_;
+    cx_l = cx * scale_;
+    cy_l = cy * scale_;
+    cx_r = cx * scale_;
+    cy_r = cy * scale_;
     baseLine = _baseline;
+
+    std::cout << "[INFO]fx fy: " << fx_l << " " << fy_l << std::endl;
+    std::cout << "[INFO]cx cy: " << cx_l << " " << cy_l << std::endl;
     std::cout << "[INFO]baseline: " << baseLine << "m" << std::endl;
     std::cout << "[INFO]run rate: " << run_rate << "Hz" << std::endl;
 

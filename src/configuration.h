@@ -23,28 +23,30 @@
 
 #include <stdint.h>
 
-#define LOG						false
-#define WRITE_FILES				true
+#define LOG false
+#define WRITE_FILES true
 
-#define PATH_AGGREGATION	8
-#define	MAX_DISPARITY		128
-#define CENSUS_WIDTH		7
-#define CENSUS_HEIGHT		9
+#define PATH_AGGREGATION 8
+#define MAX_DISPARITY 128
+#define CENSUS_WIDTH 7
+#define CENSUS_HEIGHT 9
 
-#define OCCLUDED_PIXEL		128
-#define MISMATCHED_PIXEL	129
+#define OCCLUDED_PIXEL 128
+#define MISMATCHED_PIXEL 129
 
-#define TOP				(CENSUS_HEIGHT-1)/2
-#define LEFT			(CENSUS_WIDTH-1)/2
+#define TOP ( CENSUS_HEIGHT - 1 ) / 2
+#define LEFT ( CENSUS_WIDTH - 1 ) / 2
 
 typedef uint32_t cost_t;
-#define MAX_COST		30
+#define MAX_COST 30
 
-#define BLOCK_SIZE				256
-#define COSTAGG_BLOCKSIZE			GPU_THREADS_PER_BLOCK
-#define COSTAGG_BLOCKSIZE_HORIZ		GPU_THREADS_PER_BLOCK
+#define BLOCK_SIZE 256
+#define COSTAGG_BLOCKSIZE GPU_THREADS_PER_BLOCK
+#define COSTAGG_BLOCKSIZE_HORIZ GPU_THREADS_PER_BLOCK
 
 #define ABS_THRESH 3.0
 #define REL_THRESH 0.05
+
+//#define __CUDACC_VER__ 90000
 
 #endif /* CONFIGURATION_H_ */

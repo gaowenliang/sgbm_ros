@@ -9,41 +9,65 @@
     <arg name="rate_R" default="8" />
     <arg name="rate_B" default="5" />
 
-    <node name="sgbm_L" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+    <arg name="m_fx" default="204.5" />
+    <arg name="m_fy" default="204.5" />
+    <arg name="m_cx" default="130.0" />
+    <arg name="m_cy" default="204.5" />
+
+    <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
         <remap from ="/image_left"  to="/up/image/L" />
         <remap from ="/image_right" to="/down/image/L" />
+        <remap from ="~depth_image" to="~depth" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
         <param name="p1"         type="int"      value="$(arg num_p1)" />
         <param name="p2"         type="int"      value="$(arg num_p2)" />
         <param name="rate"       type="int"      value="$(arg rate_L)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
     </node>
 
-    <node name="sgbm_F" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+    <node ns="sgbm" name="F" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
         <remap from ="/image_left"  to="/up/image/F" />
         <remap from ="/image_right" to="/down/image/F" />
+        <remap from ="~depth_image" to="~depth" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
         <param name="p1"         type="int"      value="$(arg num_p1)" />
         <param name="p2"         type="int"      value="$(arg num_p2)" />
         <param name="rate"       type="int"      value="$(arg rate_F)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
     </node>
 
-    <node name="sgbm_R" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+    <node ns="sgbm" name="R" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
         <remap from ="/image_left"  to="/up/image/R" />
         <remap from ="/image_right" to="/down/image/R" />
+        <remap from ="~depth_image" to="~depth" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
         <param name="p1"         type="int"      value="$(arg num_p1)" />
         <param name="p2"         type="int"      value="$(arg num_p2)" />
         <param name="rate"       type="int"      value="$(arg rate_R)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
     </node>
 
-
-    <node name="sgbm_B" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
+    <node ns="sgbm" name="B" pkg="sgbm_ros" type="sgbm_ros_node" respawn="false" output="screen">
         <remap from ="/image_left"  to="/up/image/B" />
         <remap from ="/image_right" to="/down/image/B" />
+        <remap from ="~depth_image" to="~depth" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
         <param name="p1"         type="int"      value="$(arg num_p1)" />
         <param name="p2"         type="int"      value="$(arg num_p2)" />
         <param name="rate"       type="int"      value="$(arg rate_B)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
     </node>
 
 
