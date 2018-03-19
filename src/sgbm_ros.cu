@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "disparity_method.h"
+#include "../include/sgbm_ros/disparity_method.h"
 
 #include "../include/sgbm_ros/backward.hpp"
 #include "../include/sgbm_ros/transport_util.h"
@@ -77,6 +77,7 @@ imageProcessCallback( const sensor_msgs::ImageConstPtr& left_image_msg, const se
   last_sync_image_stamp_ = left_image_msg->header.stamp;
   is_sync_image_ready_   = true;
 }
+
 
 cv::Mat
 getDepthImage( cv::Mat dispImg )
@@ -129,9 +130,8 @@ stereo_sgbm( )
 
     sensor_msgs::Image image_ros;
     // cout<<"depth image: \n"<<depthImg<<endl;
-    toImageMsg( image_ros, depthImg );
+    toImageMsg( image_ros, depthImg, last_sync_image_stamp_);
     image_ros.encoding        = sensor_msgs::image_encodings::TYPE_32FC1;
-    image_ros.header.stamp    = last_sync_image_stamp_;
     image_ros.header.frame_id = "/ref_frame";
     depthImg_pub.publish( image_ros );
     is_sync_image_ready_ = false;

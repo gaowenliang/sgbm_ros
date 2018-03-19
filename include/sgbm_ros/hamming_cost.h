@@ -18,12 +18,18 @@
 
 **/
 
-#ifndef COSTS_H_
-#define COSTS_H_
+#ifndef HAMMING_COST_H_
+#define HAMMING_COST_H_
 
-#include <stdint.h>
 #include "configuration.h"
+#include "util.h"
+#include <stdint.h>
 
-__global__ void CenterSymmetricCensusKernelSM2(const uint8_t *im, const uint8_t *im2, cost_t *transform, cost_t *transform2, const uint32_t rows, const uint32_t cols);
+__global__ void
+HammingDistanceCostKernel( const cost_t* d_transform0,
+                           const cost_t* d_transform1,
+                           uint8_t* d_cost,
+                           const int rows,
+                           const int cols );
 
-#endif /* COSTS_H_ */
+#endif /* HAMMING_COST_H_ */

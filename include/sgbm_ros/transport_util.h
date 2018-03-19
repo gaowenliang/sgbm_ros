@@ -97,12 +97,16 @@ getCvType( const std::string& encoding )
     // Check all the generic content encodings
     boost::cmatch m;
 
-    if ( boost::regex_match( encoding.c_str( ), m, boost::regex( "(8U|8S|16U|16S|32S|32F|64F)C([0-9]+)" ) ) )
+    if ( boost::regex_match( encoding.c_str( ),
+                             m,
+                             boost::regex( "(8U|8S|16U|16S|32S|32F|64F)C([0-9]+)" ) ) )
     {
         return CV_MAKETYPE( depthStrToInt( m[1].str( ) ), atoi( m[2].str( ).c_str( ) ) );
     }
 
-    if ( boost::regex_match( encoding.c_str( ), m, boost::regex( "(8U|8S|16U|16S|32S|32F|64F)" ) ) )
+    if ( boost::regex_match( encoding.c_str( ),
+                             m,
+                             boost::regex( "(8U|8S|16U|16S|32S|32F|64F)" ) ) )
     {
         return CV_MAKETYPE( depthStrToInt( m[1].str( ) ), 1 );
     }
@@ -110,7 +114,8 @@ getCvType( const std::string& encoding )
     throw std::invalid_argument( "Unrecognized image encoding [" + encoding + "]" );
 }
 /**
- * Reference: http://stackoverflow.com/questions/4239993/determining-endianness-at-compile-time
+ * Reference:
+ * http://stackoverflow.com/questions/4239993/determining-endianness-at-compile-time
  * TODO: This might be not safe!!!
  * @return
  */
@@ -131,19 +136,22 @@ is_big_endian( )
     return ( bint.c[0] == 1 );
 }
 /**
- * TODO: copy matFromImage() function from cv_bridge.cpp, not fully the same due to boost::endian
+ * TODO: copy matFromImage() function from cv_bridge.cpp, not fully the same due to
+ * boost::endian
  * @param source
  * @return
  */
 
 void
-toImageMsg( sensor_msgs::Image& ros_image, cv::Mat image )
+toImageMsg( sensor_msgs::Image& ros_image, cv::Mat image, ros::Time time_now )
 {
     //  ros_image.header = header;
-    ros_image.height = image.rows;
-    ros_image.width  = image.cols;
+    ros_image.header.stamp = time_now;
+    ros_image.height       = image.rows;
+    ros_image.width        = image.cols;
     //  ros_image.encoding = encoding;
-    //  ros_image.is_bigendian = (boost::endian::order::native == boost::endian::order::big);
+    //  ros_image.is_bigendian = (boost::endian::order::native ==
+    //  boost::endian::order::big);
     ros_image.is_bigendian = is_big_endian( );
     ros_image.step         = image.cols * image.elemSize( );
     size_t size            = ros_image.step * image.rows;
@@ -173,12 +181,19 @@ matFromImage( const sensor_msgs::Image& source )
     int source_type  = getCvType( source.encoding );
     int byte_depth   = sensor_msgs::image_encodings::bitDepth( source.encoding ) / 8;
     int num_channels = sensor_msgs::image_encodings::numChannels( source.encoding );
-    // std::cout << " source_type " << source_type << " byte_depth " << byte_depth << " num_channels " <<
+    // std::cout << " source_type " << source_type << " byte_depth " << byte_depth << "
+    // num_channels " <<
     // num_channels <<std::endl;
     // If the endianness is the same as locally, share the data
-    cv::Mat mat( source.height, source.width, source_type, const_cast< uchar* >( &source.data[0] ), source.step );
-    //        if ((boost::endian::order::native == boost::endian::order::big && source.is_bigendian) ||
-    //            (boost::endian::order::native == boost::endian::order::little && !source.is_bigendian) ||
+    cv::Mat mat( source.height,
+                 source.width,
+                 source_type,
+                 const_cast< uchar* >( &source.data[0] ),
+                 source.step );
+    //        if ((boost::endian::order::native == boost::endian::order::big &&
+    //        source.is_bigendian) ||
+    //            (boost::endian::order::native == boost::endian::order::little &&
+    //            !source.is_bigendian) ||
     //            byte_depth == 1)
     if ( ( !is_little_endian( ) && source.is_bigendian ) || ( is_little_endian( ) && !source.is_bigendian )
          || ( byte_depth == 1 ) )

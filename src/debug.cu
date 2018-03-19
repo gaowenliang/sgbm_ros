@@ -18,7 +18,7 @@
 
 **/
 
-#include "debug.h"
+#include "../include/sgbm_ros/debug.h"
 
 void debug_log(const char *str) {
 #if LOG

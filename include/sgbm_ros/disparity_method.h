@@ -18,35 +18,32 @@
 
 **/
 
-#ifndef CONFIGURATION_H_
-#define CONFIGURATION_H_
+#ifndef DISPARITY_METHOD_H_
+#define DISPARITY_METHOD_H_
 
+#include "configuration.h"
+#include "cost_aggregation.h"
+#include "costs.h"
+#include "debug.h"
+#include "hamming_cost.h"
+#include "median_filter.h"
+#include "util.h"
+#include <opencv2/opencv.hpp>
 #include <stdint.h>
 
-#define LOG false
-#define WRITE_FILES true
+void
+init_disparity_method( const uint8_t _p1, const uint8_t _p2 );
 
-#define PATH_AGGREGATION 8
-#define MAX_DISPARITY 128
-#define CENSUS_WIDTH 7
-#define CENSUS_HEIGHT 9
+cv::Mat
+compute_disparity_method( cv::Mat left, cv::Mat right, float* elapsed_time_ms );
 
-#define OCCLUDED_PIXEL 128
-#define MISMATCHED_PIXEL 129
+void
+compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, float* elapsed_time_ms );
 
-#define TOP ( CENSUS_HEIGHT - 1 ) / 2
-#define LEFT ( CENSUS_WIDTH - 1 ) / 2
+void
+finish_disparity_method( );
 
-typedef uint32_t cost_t;
-#define MAX_COST 30
+static void
+free_memory( );
 
-#define BLOCK_SIZE 256
-#define COSTAGG_BLOCKSIZE GPU_THREADS_PER_BLOCK
-#define COSTAGG_BLOCKSIZE_HORIZ GPU_THREADS_PER_BLOCK
-
-#define ABS_THRESH 3.0
-#define REL_THRESH 0.05
-
-//#define __CUDACC_VER__ 90000
-
-#endif /* CONFIGURATION_H_ */
+#endif /* DISPARITY_METHOD_H_ */

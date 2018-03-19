@@ -1,0 +1,89 @@
+<launch>
+
+    <arg name="num_p1" default="600" />
+    <arg name="num_p2" default="2400" />
+    <arg name="baseline" default="0.234" />
+
+    <arg name="rate_L" default="8" />
+    <arg name="rate_F" default="10" />
+    <arg name="rate_R" default="8" />
+    <arg name="rate_B" default="5" />
+
+    <arg name="row_L" default="409" />
+    <arg name="row_F" default="409" />
+    <arg name="row_R" default="409" />
+    <arg name="row_B" default="409" />
+
+    <arg name="col_L" default="260" />
+    <arg name="col_F" default="260" />
+    <arg name="col_R" default="260" />
+    <arg name="col_B" default="260" />
+
+    <arg name="m_fx" default="204.5" />
+    <arg name="m_fy" default="204.5" />
+    <arg name="m_cx" default="130.0" />
+    <arg name="m_cy" default="204.5" />
+
+<!--    <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+        <remap from ="~depth_image" to="~depth" />
+        <param name ="image_topic" type="string"  value="/image/L" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+        <param name="p1"         type="int"      value="$(arg num_p1)" />
+        <param name="p2"         type="int"      value="$(arg num_p2)" />
+        <param name="rate"       type="int"      value="$(arg rate_L)" />
+        <param name="row"   type="int"   value="$(arg row_L)" />
+        <param name="col"   type="int"   value="$(arg col_L)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
+    </node>-->
+
+    <node ns="sgbm" name="F" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+        <remap from ="~depth_image" to="~depth" />
+        <param name ="image_topic" type="string"  value="/image/F" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+        <param name="p1"         type="int"      value="$(arg num_p1)" />
+        <param name="p2"         type="int"      value="$(arg num_p2)" />
+        <param name="rate"       type="int"      value="$(arg rate_F)" />
+        <param name="row"   type="int"   value="$(arg row_F)" />
+        <param name="col"   type="int"   value="$(arg col_F)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
+    </node>
+
+<!--    <node ns="sgbm" name="R" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+        <remap from ="~depth_image" to="~depth" />
+        <param name ="image_topic" type="string"  value="/image/R" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+        <param name="p1"         type="int"      value="$(arg num_p1)" />
+        <param name="p2"         type="int"      value="$(arg num_p2)" />
+        <param name="rate"       type="int"      value="$(arg rate_R)" />
+        <param name="row"   type="int"   value="$(arg row_R)" />
+        <param name="col"   type="int"   value="$(arg col_R)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
+    </node>
+
+    <node ns="sgbm" name="B" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+        <remap from ="~depth_image" to="~depth" />
+        <param name ="image_topic" type="string"  value="/image/B" />
+        <param name="baseline"   type="double"   value="$(arg baseline)" />
+        <param name="p1"         type="int"      value="$(arg num_p1)" />
+        <param name="p2"         type="int"      value="$(arg num_p2)" />
+        <param name="rate"       type="int"      value="$(arg rate_B)" />
+        <param name="row"   type="int"   value="$(arg row_B)" />
+        <param name="col"   type="int"   value="$(arg col_B)" />
+        <param name="fx"   type="double"   value="$(arg m_fx)" />
+        <param name="fy"   type="double"   value="$(arg m_fy)" />
+        <param name="cx"   type="double"   value="$(arg m_cx)" />
+        <param name="cy"   type="double"   value="$(arg m_cy)" />
+    </node>-->
+
+
+
+</launch>

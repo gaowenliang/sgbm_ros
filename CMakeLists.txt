@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   cv_bridge
   image_transport
+  code_utils
 )
 
 find_package( CUDA REQUIRED )
@@ -44,23 +45,36 @@ set(
     CUDA_NVCC_FLAGS
     ${CUDA_NVCC_FLAGS};
     -O3 -lineinfo
-#    -gencode=arch=compute_30,code=sm_30
+    -gencode=arch=compute_30,code=sm_30     # Quadro K2000
 #    -gencode=arch=compute_35,code=sm_35
 #    -gencode=arch=compute_50,code=sm_50
 #    -gencode=arch=compute_52,code=sm_52
 #    -gencode=arch=compute_53,code=sm_53    # TX1
-    -gencode=arch=compute_62,code=sm_62    # TX2
+#    -gencode=arch=compute_62,code=sm_62    # TX2
     )
 
 cuda_add_executable( sgbm_ros_node
-    #src/main.cu 
     src/sgbm_ros.cu
     src/median_filter.cu
     src/hamming_cost.cu
     src/disparity_method.cu
-    src/debug.cu src/costs.cu)
+    src/debug.cu
+    src/costs.cu)
 
 target_link_libraries( sgbm_ros_node 
   ${catkin_LIBRARIES}
   ${OpenCV_LIBS} 
+)
+
+cuda_add_executable( sgbm_dual_node
+    src/sgbm_dual.cu
+    src/median_filter.cu
+    src/hamming_cost.cu
+    src/disparity_method.cu
+    src/debug.cu
+    src/costs.cu)
+
+target_link_libraries( sgbm_dual_node
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
 )

@@ -53,8 +53,8 @@ CheckCudaErrorAux( const char* file, unsigned line, const char* statement, cudaE
 {
     if ( err == cudaSuccess )
         return;
-    std::cerr << statement << " returned " << cudaGetErrorString( err ) << "(" << err << ") at " << file << ":" << line
-              << std::endl;
+    std::cerr << statement << " returned " << cudaGetErrorString( err ) << "(" << err
+              << ") at " << file << ":" << line << std::endl;
     exit( 1 );
 }
 
@@ -63,13 +63,16 @@ GPU Side defines (ASM instructions)
 **************************************/
 
 // output temporal carry in internal register
-#define UADD__CARRY_OUT( c, a, b ) asm volatile( "add.cc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
+#define UADD__CARRY_OUT( c, a, b )                                                         \
+    asm volatile( "add.cc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
 
 // add & output with temporal carry of internal register
-#define UADD__IN_CARRY_OUT( c, a, b ) asm volatile( "addc.cc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
+#define UADD__IN_CARRY_OUT( c, a, b )                                                      \
+    asm volatile( "addc.cc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
 
 // add with temporal carry of internal register
-#define UADD__IN_CARRY( c, a, b ) asm volatile( "addc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
+#define UADD__IN_CARRY( c, a, b )                                                          \
+    asm volatile( "addc.u32 %0, %1, %2;" : "=r"( c ) : "r"( a ), "r"( b ) )
 
 // packing and unpacking: from uint64_t to uint2
 #define V2S_B64( v, s ) asm( "mov.b64 %0, {%1,%2};" : "=l"( s ) : "r"( v.x ), "r"( v.y ) )
@@ -215,7 +218,7 @@ vcmpgeu4( unsigned int a, unsigned int b )
     unsigned int r, c;
     c = a - b;
     asm( "prmt.b32 %0,%1,0,0xba98;" : "=r"( r ) : "r"( c ) ); // build mask from msbs
-    return r;                                                 // byte-wise unsigned gt-eq comparison with mask result
+    return r; // byte-wise unsigned gt-eq comparison with mask result
 }
 
 __device__ __forceinline__ unsigned int
@@ -249,7 +252,15 @@ popcount( T n )
 }
 
 __inline__ __device__ uint8_t
-minu8_index4( int* min_idx, const uint8_t val1, const int dis, const uint8_t val2, const int dis2, const uint8_t val3, const int dis3, const uint8_t val4, const int dis4 )
+minu8_index4( int* min_idx,
+              const uint8_t val1,
+              const int dis,
+              const uint8_t val2,
+              const int dis2,
+              const uint8_t val3,
+              const int dis3,
+              const uint8_t val4,
+              const int dis4 )
 {
     int min_idx1 = dis;
     uint8_t min1 = val1;
