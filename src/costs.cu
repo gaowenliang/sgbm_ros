@@ -76,62 +76,39 @@ CenterSymmetricCensusKernelSM2( const uint8_t* im,
     cost_t census2 = 0;
     if ( idy < rows && idx < cols )
     {
-        for ( int k = 0; k < CENSUS_HEIGHT / 2; k++ )
+        int loop_end_height = ( CENSUS_HEIGHT % 2 == 0 ) ? ( CENSUS_HEIGHT / 2 ) : ( CENSUS_HEIGHT / 2 + 1 );
+
+        for ( int k = 0; k < loop_end_height; k++ )
         {
             for ( int m = 0; m < CENSUS_WIDTH; m++ )
             {
                 // clang-format off
-                const uint8_t e1 = window[( threadIdx.y + k ) * win_cols + threadIdx.x + m];
+                const uint8_t e1 = window[( threadIdx.y + k ) * win_cols + ( threadIdx.x + m )];
                 const uint8_t e2 = window[( threadIdx.y + 2 * TOP - k ) * win_cols //
                                           + threadIdx.x + 2 * LEFT - m];
 
-                const uint8_t i1 = window2[( threadIdx.y + k ) * win_cols + threadIdx.x + m];
+                const uint8_t i1 = window2[( threadIdx.y + k ) * win_cols + ( threadIdx.x + m )];
                 const uint8_t i2 = window2[( threadIdx.y + 2 * TOP - k ) * win_cols
                                           + threadIdx.x + 2 * LEFT - m];
                 // clang-format on
 
                 const int shft = k * CENSUS_WIDTH + m;
+
                 // Compare to the center
                 cost_t tmp = ( e1 >= e2 );
+
                 // Shift to the desired position
                 tmp <<= shft;
+
                 // Add it to its place
                 census |= tmp;
+
                 // Compare to the center
                 cost_t tmp2 = ( i1 >= i2 );
+
                 // Shift to the desired position
                 tmp2 <<= shft;
-                // Add it to its place
-                census2 |= tmp2;
-            }
-        }
 
-        if ( CENSUS_HEIGHT % 2 != 0 )
-        {
-            const int k = CENSUS_HEIGHT / 2;
-            for ( int m = 0; m < CENSUS_WIDTH / 2; m++ )
-            {
-                // clang-format off
-                const uint8_t e1 = window[( threadIdx.y + k ) * win_cols + threadIdx.x + m];
-                const uint8_t e2 = window[( threadIdx.y + 2 * TOP - k ) * win_cols
-                                          + threadIdx.x + 2 * LEFT - m];
-
-                const uint8_t i1 = window2[( threadIdx.y + k ) * win_cols + threadIdx.x + m];
-                const uint8_t i2 = window2[( threadIdx.y + 2 * TOP - k ) * win_cols
-                                          + threadIdx.x + 2 * LEFT - m];
-                // clang-format on
-
-                const int shft = k * CENSUS_WIDTH + m;
-                // Compare to the center
-                cost_t tmp = ( e1 >= e2 );
-                // Shift to the desired position
-                tmp <<= shft;
-                // Add it to its place
-                census |= tmp;
-                // Compare to the center
-                cost_t tmp2 = ( i1 >= i2 );
-                // Shift to the desired position
-                tmp2 <<= shft;
                 // Add it to its place
                 census2 |= tmp2;
             }

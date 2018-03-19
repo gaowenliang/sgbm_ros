@@ -100,7 +100,7 @@ stereo_sgbm( )
 
     float elapsed_time_ms;
     compute_disparity_method2( image_left, image_right, disparityImage, &elapsed_time_ms );
-    ROS_DEBUG( "SGBM cost %fms", sgm_tic.toc( ) );
+    ROS_DEBUG( "SGBM cost %fms, cuda %fms", sgm_tic.toc( ), elapsed_time_ms );
 
     getDepthImage( disparityImage, depthImage );
 

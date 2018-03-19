@@ -18,29 +18,9 @@
 
 **/
 
-#ifndef DISPARITY_METHOD_H_
-#define DISPARITY_METHOD_H_
+#ifndef COST_AGGREGATION_H_
+#define COST_AGGREGATION_H_
 
-#include "configuration.h"
-#include "cost_aggregation/cost_aggregation.h"
-#include "costs.h"
-#include "debug.h"
-#include "hamming_cost.h"
-#include "median_filter.h"
-#include "util.h"
-#include <opencv2/opencv.hpp>
-#include <stdint.h>
+#include "CostAggregationKernel.h"
 
-void
-init_disparity_method( const uint8_t _p1, const uint8_t _p2 );
-
-void
-compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, float* elapsed_time_ms );
-
-void
-finish_disparity_method( );
-
-static void
-free_memory( );
-
-#endif /* DISPARITY_METHOD_H_ */
+#endif /* COST_AGGREGATION_H_ */

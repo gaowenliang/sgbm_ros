@@ -46,7 +46,7 @@ MedianFilter( const T* __restrict__ d_input, T* __restrict__ d_out, const uint32
         {
             for ( uint32_t j = 0; j < n; j++ )
             {
-                window[i * n + j] = d_input[( row - half + i ) * cols + col - half + j];
+                window[i * n + j] = d_input[( row - half + i ) * cols + ( col - half + j )];
             }
         }
 
@@ -66,6 +66,7 @@ MedianFilter( const T* __restrict__ d_input, T* __restrict__ d_out, const uint32
             window[i]       = window[min_idx];
             window[min_idx] = tmp;
         }
+
         d_out[idx] = window[n * n / 2];
     }
     else if ( row < rows && col < cols )

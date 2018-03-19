@@ -28,6 +28,7 @@
 
 #define PATH_AGGREGATION 8 // 2-4-8
 #define MAX_DISPARITY 128
+
 #define CENSUS_WIDTH 7
 #define CENSUS_HEIGHT 9
 
@@ -37,7 +38,6 @@
 #define TOP ( CENSUS_HEIGHT - 1 ) / 2
 #define LEFT ( CENSUS_WIDTH - 1 ) / 2
 
-typedef uint32_t cost_t;
 #define MAX_COST 30
 
 #define BLOCK_SIZE 256
@@ -46,6 +46,8 @@ typedef uint32_t cost_t;
 
 #define ABS_THRESH 3.0
 #define REL_THRESH 0.05
+
+typedef uint32_t cost_t;
 
 //#define __CUDACC_VER__ 90000
 

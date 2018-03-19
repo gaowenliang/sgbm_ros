@@ -53,18 +53,18 @@ set(
 #    -gencode=arch=compute_62,code=sm_62    # TX2
     )
 
-cuda_add_executable( sgbm_ros_node
-    src/sgbm_ros.cu
-    src/median_filter.cu
-    src/hamming_cost.cu
-    src/disparity_method.cu
-    src/debug.cu
-    src/costs.cu)
+#cuda_add_executable( sgbm_ros_node
+#    src/sgbm_ros.cu
+#    src/median_filter.cu
+#    src/hamming_cost.cu
+#    src/disparity_method.cu
+#    src/debug.cu
+#    src/costs.cu)
 
-target_link_libraries( sgbm_ros_node 
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBS} 
-)
+#target_link_libraries( sgbm_ros_node
+#  ${catkin_LIBRARIES}
+#  ${OpenCV_LIBS}
+#)
 
 cuda_add_executable( sgbm_dual_node
     src/sgbm_dual.cu
