@@ -4,7 +4,7 @@
 #include <Eigen/Eigen>
 #include <assert.h>
 #include <cmath> // std::string
-#include <code_utils/tic_toc.h>
+#include <code_utils/sys_utils/tic_toc.h>
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 #include <cv_bridge/cv_bridge.h>
@@ -35,7 +35,7 @@ ros::Publisher depthImg_pub;
 cv::Mat image_left, image_right;
 cv::Mat depthImage, disparityImage;
 sensor_msgs::Image image_ros;
-ros::Time last_image_time;
+ros::Time image_time;
 bool is_image_ready = false;
 
 const int limit_left   = 30;
@@ -57,10 +57,10 @@ int image_row = 100, image_col = 100;
 void
 stereoIimageProcessCallback( const sensor_msgs::ImageConstPtr& image_msg )
 {
-    image_left = cv_bridge::toCvCopy( image_msg, "mono8" )->image.rowRange( 0, image_row );
+    image_left  = cv_bridge::toCvCopy( image_msg, "mono8" )->image.rowRange( 0, image_row );
     image_right = cv_bridge::toCvCopy( image_msg, "mono8" )->image.rowRange( image_row, 2 * image_row );
+    image_time  = image_msg->header.stamp;
 
-    last_image_time = image_msg->header.stamp;
     is_image_ready  = true;
 }
 
@@ -96,18 +96,17 @@ stereo_sgbm( )
     if ( !is_image_ready )
         return;
     // Compute
-    sys_utils::TicTocPart sgm_tic;
+    sys_utils::tic::TicTocPart sgm_tic;
 
     float elapsed_time_ms;
     compute_disparity_method2( image_left, image_right, disparityImage, &elapsed_time_ms );
-    ROS_DEBUG( "SGBM cost %fms, cuda %fms", sgm_tic.toc( ), elapsed_time_ms );
 
     getDepthImage( disparityImage, depthImage );
 
-    toImageMsg( image_ros, depthImage, last_image_time );
+    toImageMsg( image_ros, depthImage, image_time );
 
     depthImg_pub.publish( image_ros );
-    ROS_DEBUG( "Time in total %fms", sgm_tic.tocEnd( ) );
+    ROS_DEBUG( "Time in total %fms, SGBM cuda cost %fms", sgm_tic.tocEnd( ), elapsed_time_ms );
 
     is_image_ready = false;
 }

@@ -520,23 +520,24 @@ CostAggregationGeneric( uint8_t* d_cost,
             &index, &index_im, &col, add_index, add_imindex );
 
             // clang-format off
-            CostAggregationGenericIteration< T, ITER_NORMAL, MIN_COMPUTE, dir_type, false, recompute, join_dispcomputation >(
-            index,
-            index_im,
-            col,
-            &old_values,
-            &old_value1, &old_value2, &old_value3, &old_value4,
-            &min_cost, &min_cost_p2,
-            d_cost,
-            d_L,
-            p1_vector, p2_vector,
-            _d_transform0, _d_transform1,
-            lane,
-            MAX_PAD,
-            dis,
-            &rp2, &rp3, &rp0, &rp1,
-            d_disparity,
-            d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+            CostAggregationGenericIteration< T, ITER_NORMAL, MIN_COMPUTE, dir_type, false, recompute, join_dispcomputation >
+                (
+                  index,
+                  index_im,
+                  col,
+                  &old_values,
+                  &old_value1, &old_value2, &old_value3, &old_value4,
+                  &min_cost, &min_cost_p2,
+                  d_cost,
+                  d_L,
+                  p1_vector, p2_vector,
+                  _d_transform0, _d_transform1,
+                  lane,
+                  MAX_PAD,
+                  dis,
+                  &rp2, &rp3, &rp0, &rp1,
+                  d_disparity,
+                  d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
 
             // clang-format off
             CostAggregationGenericIndexesIncrement< add_col, recompute, join_dispcomputation >(

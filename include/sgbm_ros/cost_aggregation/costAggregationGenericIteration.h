@@ -236,6 +236,7 @@ CostAggregationGenericIteration( int index,
         const uint16_t val3 = l0_z + l1_z + l2_z + *old_value3;
         const uint16_t val4 = l0_w + l1_w + l2_w + *old_value4;
 #endif
+
         int min_idx1  = dis;
         uint16_t min1 = val1;
         if ( val1 > val2 )
@@ -270,6 +271,7 @@ CostAggregationGenericIteration( int index,
     {
         st_gbl_cs( reinterpret_cast< uint32_t* >( &d_L[index] ), *old_values );
     }
+
     if ( min_type == MIN_COMPUTE )
     {
         int min_cost_scalar = min( min( *old_value1, *old_value2 ), min( *old_value3, *old_value4 ) );

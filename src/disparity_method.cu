@@ -20,7 +20,8 @@
 
 #include "../include/sgbm_ros/disparity_method.h"
 
-static cudaStream_t stream1, stream2, stream3, stream4, stream5, stream6, stream7, stream8;
+static cudaStream_t stream1, stream2, stream3, stream4;
+//, stream5, stream6;//, stream7, stream8;
 
 static uint8_t* d_img0;
 static uint8_t* d_img1;
@@ -51,14 +52,7 @@ init_disparity_method( const uint8_t _p1, const uint8_t _p2 )
     // CUDA_CHECK_RETURN(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
 
     // Create streams
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream1 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream2 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream3 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream4 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream5 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream6 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream7 ) );
-    CUDA_CHECK_RETURN( cudaStreamCreate( &stream8 ) );
+    createStreams( );
 
     first_alloc = true;
 
@@ -166,19 +160,19 @@ compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, floa
 #if PATH_AGGREGATION == 8
 
     debug_log( "Calling Diagonal Down to Up, Left to Right" );
-    CostAggregationKernel_DiagonalDownUpLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream5 >>>(
+    CostAggregationKernel_DiagonalDownUpLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream1 >>>(
     d_cost, d_L4, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
 
     debug_log( "Calling Diagonal Up to Down, Left to Right" );
-    CostAggregationKernel_DiagonalUpDownLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream6 >>>(
+    CostAggregationKernel_DiagonalUpDownLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream2 >>>(
     d_cost, d_L5, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
 
     debug_log( "Calling Diagonal Down to Up, Right to Left" );
-    CostAggregationKernel_DiagonalDownUpRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream7 >>>(
+    CostAggregationKernel_DiagonalDownUpRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream3 >>>(
     d_cost, d_L6, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
 
     debug_log( "Calling Diagonal Up to Down, Right to Left" );
-    CostAggregationKernel_DiagonalUpDownRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream8 >>>(
+    CostAggregationKernel_DiagonalUpDownRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream4 >>>(
     d_cost, d_L7, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
 #endif
 
@@ -224,19 +218,38 @@ free_memory( )
     delete[] h_disparity;
 }
 
+static void
+createStreams( )
+{
+    CUDA_CHECK_RETURN( cudaStreamCreate( &stream1 ) );
+    CUDA_CHECK_RETURN( cudaStreamCreate( &stream2 ) );
+    CUDA_CHECK_RETURN( cudaStreamCreate( &stream3 ) );
+    CUDA_CHECK_RETURN( cudaStreamCreate( &stream4 ) );
+//    CUDA_CHECK_RETURN( cudaStreamCreate( &stream5 ) );
+//    CUDA_CHECK_RETURN( cudaStreamCreate( &stream6 ) );
+//    CUDA_CHECK_RETURN( cudaStreamCreate( &stream7 ) );
+//    CUDA_CHECK_RETURN( cudaStreamCreate( &stream8 ) );
+}
+
+static void
+destroyStreams( )
+{
+    CUDA_CHECK_RETURN( cudaStreamDestroy( stream1 ) );
+    CUDA_CHECK_RETURN( cudaStreamDestroy( stream2 ) );
+    CUDA_CHECK_RETURN( cudaStreamDestroy( stream3 ) );
+    CUDA_CHECK_RETURN( cudaStreamDestroy( stream4 ) );
+//    CUDA_CHECK_RETURN( cudaStreamDestroy( stream5 ) );
+//    CUDA_CHECK_RETURN( cudaStreamDestroy( stream6 ) );
+//    CUDA_CHECK_RETURN( cudaStreamDestroy( stream7 ) );
+//    CUDA_CHECK_RETURN( cudaStreamDestroy( stream8 ) );
+}
+
 void
 finish_disparity_method( )
 {
     if ( !first_alloc )
     {
         free_memory( );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream1 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream2 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream3 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream4 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream5 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream6 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream7 ) );
-        CUDA_CHECK_RETURN( cudaStreamDestroy( stream8 ) );
+        destroyStreams( );
     }
 }

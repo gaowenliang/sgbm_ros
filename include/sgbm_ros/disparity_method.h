@@ -38,9 +38,18 @@ void
 compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, float* elapsed_time_ms );
 
 void
+compute_depth( cv::Mat left, cv::Mat right, cv::Mat& depth, float* elapsed_time_ms );
+
+void
 finish_disparity_method( );
 
 static void
 free_memory( );
+
+static void
+createStreams( );
+
+static void
+destroyStreams( );
 
 #endif /* DISPARITY_METHOD_H_ */

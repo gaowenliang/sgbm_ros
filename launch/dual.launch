@@ -24,7 +24,7 @@
     <arg name="m_cx" default="130.0" />
     <arg name="m_cy" default="204.5" />
 
-<!--    <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+    <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
         <remap from ="~depth_image" to="~depth" />
         <param name ="image_topic" type="string"  value="/image/L" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
@@ -37,7 +37,7 @@
         <param name="fy"   type="double"   value="$(arg m_fy)" />
         <param name="cx"   type="double"   value="$(arg m_cx)" />
         <param name="cy"   type="double"   value="$(arg m_cy)" />
-    </node>-->
+    </node>
 
     <node ns="sgbm" name="F" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
         <remap from ="~depth_image" to="~depth" />
@@ -54,7 +54,7 @@
         <param name="cy"   type="double"   value="$(arg m_cy)" />
     </node>
 
-<!--    <node ns="sgbm" name="R" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
+    <node ns="sgbm" name="R" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
         <remap from ="~depth_image" to="~depth" />
         <param name ="image_topic" type="string"  value="/image/R" />
         <param name="baseline"   type="double"   value="$(arg baseline)" />
@@ -82,7 +82,7 @@
         <param name="fy"   type="double"   value="$(arg m_fy)" />
         <param name="cx"   type="double"   value="$(arg m_cx)" />
         <param name="cy"   type="double"   value="$(arg m_cy)" />
-    </node>-->
+    </node>
 
 
 

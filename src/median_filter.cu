@@ -26,3 +26,9 @@ MedianFilter3x3( const uint8_t* __restrict__ d_input, uint8_t* __restrict__ d_ou
 {
     MedianFilter< 3 >( d_input, d_out, rows, cols );
 }
+
+__global__ void
+MedianFilter3x3GetDepth( const uint8_t* __restrict__ d_input, uint8_t* __restrict__ d_out, const uint32_t rows, const uint32_t cols )
+{
+    MedianFilterGetDepth< 3 >( d_input, d_out, rows, cols );
+}
