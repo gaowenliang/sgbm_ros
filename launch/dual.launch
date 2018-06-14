@@ -19,10 +19,25 @@
     <arg name="col_R" default="260" />
     <arg name="col_B" default="260" />
 
-    <arg name="m_fx" default="204.5" />
-    <arg name="m_fy" default="204.5" />
-    <arg name="m_cx" default="130.0" />
-    <arg name="m_cy" default="204.5" />
+    <arg name="m_fx_L" default="204.5" />
+    <arg name="m_fx_F" default="204.5" />
+    <arg name="m_fx_R" default="204.5" />
+    <arg name="m_fx_B" default="204.5" />
+
+    <arg name="m_fy_L" default="204.5" />
+    <arg name="m_fy_F" default="204.5" />
+    <arg name="m_fy_R" default="204.5" />
+    <arg name="m_fy_B" default="204.5" />
+
+    <arg name="m_cx_L" default="130.0" />
+    <arg name="m_cx_F" default="130.0" />
+    <arg name="m_cx_R" default="130.0" />
+    <arg name="m_cx_B" default="130.0" />
+
+    <arg name="m_cy_L" default="204.5" />
+    <arg name="m_cy_F" default="204.5" />
+    <arg name="m_cy_R" default="204.5" />
+    <arg name="m_cy_B" default="204.5" />
 
     <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
         <remap from ="~depth_image" to="~depth" />
@@ -33,10 +48,10 @@
         <param name="rate"       type="int"      value="$(arg rate_L)" />
         <param name="row"   type="int"   value="$(arg row_L)" />
         <param name="col"   type="int"   value="$(arg col_L)" />
-        <param name="fx"   type="double"   value="$(arg m_fx)" />
-        <param name="fy"   type="double"   value="$(arg m_fy)" />
-        <param name="cx"   type="double"   value="$(arg m_cx)" />
-        <param name="cy"   type="double"   value="$(arg m_cy)" />
+        <param name="fx"   type="double"   value="$(arg m_fx_L)" />
+        <param name="fy"   type="double"   value="$(arg m_fy_L)" />
+        <param name="cx"   type="double"   value="$(arg m_cx_L)" />
+        <param name="cy"   type="double"   value="$(arg m_cy_L)" />
     </node>
 
     <node ns="sgbm" name="F" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
@@ -48,10 +63,10 @@
         <param name="rate"       type="int"      value="$(arg rate_F)" />
         <param name="row"   type="int"   value="$(arg row_F)" />
         <param name="col"   type="int"   value="$(arg col_F)" />
-        <param name="fx"   type="double"   value="$(arg m_fx)" />
-        <param name="fy"   type="double"   value="$(arg m_fy)" />
-        <param name="cx"   type="double"   value="$(arg m_cx)" />
-        <param name="cy"   type="double"   value="$(arg m_cy)" />
+        <param name="fx"   type="double"   value="$(arg m_fx_F)" />
+        <param name="fy"   type="double"   value="$(arg m_fy_F)" />
+        <param name="cx"   type="double"   value="$(arg m_cx_F)" />
+        <param name="cy"   type="double"   value="$(arg m_cy_F)" />
     </node>
 
     <node ns="sgbm" name="R" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
@@ -63,10 +78,10 @@
         <param name="rate"       type="int"      value="$(arg rate_R)" />
         <param name="row"   type="int"   value="$(arg row_R)" />
         <param name="col"   type="int"   value="$(arg col_R)" />
-        <param name="fx"   type="double"   value="$(arg m_fx)" />
-        <param name="fy"   type="double"   value="$(arg m_fy)" />
-        <param name="cx"   type="double"   value="$(arg m_cx)" />
-        <param name="cy"   type="double"   value="$(arg m_cy)" />
+        <param name="fx"   type="double"   value="$(arg m_fx_R)" />
+        <param name="fy"   type="double"   value="$(arg m_fy_R)" />
+        <param name="cx"   type="double"   value="$(arg m_cx_R)" />
+        <param name="cy"   type="double"   value="$(arg m_cy_R)" />
     </node>
 
     <node ns="sgbm" name="B" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
@@ -78,10 +93,10 @@
         <param name="rate"       type="int"      value="$(arg rate_B)" />
         <param name="row"   type="int"   value="$(arg row_B)" />
         <param name="col"   type="int"   value="$(arg col_B)" />
-        <param name="fx"   type="double"   value="$(arg m_fx)" />
-        <param name="fy"   type="double"   value="$(arg m_fy)" />
-        <param name="cx"   type="double"   value="$(arg m_cx)" />
-        <param name="cy"   type="double"   value="$(arg m_cy)" />
+        <param name="fx"   type="double"   value="$(arg m_fx_B)" />
+        <param name="fy"   type="double"   value="$(arg m_fy_B)" />
+        <param name="cx"   type="double"   value="$(arg m_cx_B)" />
+        <param name="cy"   type="double"   value="$(arg m_cy_B)" />
     </node>
 
 
