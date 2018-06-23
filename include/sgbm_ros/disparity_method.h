@@ -38,7 +38,7 @@ void
 compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, float* elapsed_time_ms );
 
 void
-compute_depth( cv::Mat left, cv::Mat right, cv::Mat& depth, float* elapsed_time_ms );
+compute_depth( cv::Mat left, cv::Mat right, cv::Mat& depth, float* elapsed_time_ms, const float FbaseLine );
 
 void
 finish_disparity_method( );

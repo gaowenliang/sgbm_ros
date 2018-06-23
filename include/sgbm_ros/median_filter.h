@@ -32,9 +32,10 @@ MedianFilter3x3( const uint8_t* __restrict__ d_input,
 
 __global__ void
 MedianFilter3x3GetDepth( const uint8_t* __restrict__ d_input,
-                         uint8_t* __restrict__ d_out,
+                         float* __restrict__ d_out,
                          const uint32_t rows,
-                         const uint32_t cols );
+                         const uint32_t cols,
+                         const float FbaseLine );
 
 template< int n, typename T >
 __inline__ __device__ void
@@ -81,9 +82,13 @@ MedianFilter( const T* __restrict__ d_input, T* __restrict__ d_out, const uint32
     }
 }
 
-template< int n, typename T >
+template< int n, typename T, typename T2 >
 __inline__ __device__ void
-MedianFilterGetDepth( const T* __restrict__ d_input, T* __restrict__ d_out, const uint32_t rows, const uint32_t cols )
+MedianFilterGetDepth( const T* __restrict__ d_input,
+                      T2* __restrict__ d_out,
+                      const uint32_t rows,
+                      const uint32_t cols,
+                      const float FbaseLine )
 {
     const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     const uint32_t row = idx / cols;
@@ -118,11 +123,11 @@ MedianFilterGetDepth( const T* __restrict__ d_input, T* __restrict__ d_out, cons
             window[min_idx] = tmp;
         }
 
-        d_out[idx] = window[n * n / 2];
+        d_out[idx] = FbaseLine / window[n * n / 2];
     }
     else if ( row < rows && col < cols )
     {
-        d_out[idx] = d_input[idx];
+        d_out[idx] = FbaseLine / d_input[idx];
     }
 }
 

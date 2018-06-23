@@ -9,35 +9,35 @@
     <arg name="rate_R" default="8" />
     <arg name="rate_B" default="5" />
 
-    <arg name="row_L" default="409" />
+    <arg name="row_L" default="315" />
     <arg name="row_F" default="409" />
-    <arg name="row_R" default="409" />
-    <arg name="row_B" default="409" />
+    <arg name="row_R" default="315" />
+    <arg name="row_B" default="315" />
 
-    <arg name="col_L" default="260" />
+    <arg name="col_L" default="200" />
     <arg name="col_F" default="260" />
-    <arg name="col_R" default="260" />
-    <arg name="col_B" default="260" />
+    <arg name="col_R" default="200" />
+    <arg name="col_B" default="200" />
 
-    <arg name="m_fx_L" default="204.5" />
+    <arg name="m_fx_L" default="157.5" />
     <arg name="m_fx_F" default="204.5" />
-    <arg name="m_fx_R" default="204.5" />
-    <arg name="m_fx_B" default="204.5" />
+    <arg name="m_fx_R" default="157.5" />
+    <arg name="m_fx_B" default="157.5" />
 
-    <arg name="m_fy_L" default="204.5" />
+    <arg name="m_fy_L" default="157.5" />
     <arg name="m_fy_F" default="204.5" />
-    <arg name="m_fy_R" default="204.5" />
-    <arg name="m_fy_B" default="204.5" />
+    <arg name="m_fy_R" default="157.5" />
+    <arg name="m_fy_B" default="157.5" />
 
-    <arg name="m_cx_L" default="130.0" />
+    <arg name="m_cx_L" default="100.0" />
     <arg name="m_cx_F" default="130.0" />
-    <arg name="m_cx_R" default="130.0" />
-    <arg name="m_cx_B" default="130.0" />
+    <arg name="m_cx_R" default="100.0" />
+    <arg name="m_cx_B" default="100.0" />
 
-    <arg name="m_cy_L" default="204.5" />
+    <arg name="m_cy_L" default="157.5" />
     <arg name="m_cy_F" default="204.5" />
-    <arg name="m_cy_R" default="204.5" />
-    <arg name="m_cy_B" default="204.5" />
+    <arg name="m_cy_R" default="157.5" />
+    <arg name="m_cy_B" default="157.5" />
 
     <node ns="sgbm" name="L" pkg="sgbm_ros" type="sgbm_dual_node" respawn="false" output="screen">
         <remap from ="~depth_image" to="~depth" />

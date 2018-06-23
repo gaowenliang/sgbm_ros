@@ -30,6 +30,9 @@ static cost_t* d_transform1;
 static uint8_t* d_cost;
 static uint8_t* d_disparity;
 static uint8_t* d_disparity_filtered_uchar;
+static float* d_depth;
+static float* h_depth;
+
 static uint8_t* h_disparity;
 static uint16_t* d_S;
 static uint8_t* d_L0;
@@ -61,6 +64,144 @@ init_disparity_method( const uint8_t _p1, const uint8_t _p2 )
     rows  = 0;
     cols  = 0;
 }
+
+void
+compute_depth( cv::Mat left, cv::Mat right, cv::Mat& depth, float* elapsed_time_ms,
+               const float FbaseLine  )
+{
+    if ( cols != left.cols || rows != left.rows )
+    {
+        debug_log( "WARNING: cols or rows are different" );
+        if ( !first_alloc )
+        {
+            debug_log( "Freeing memory" );
+            free_memory( );
+        }
+        first_alloc = false;
+        cols        = left.cols;
+        rows        = left.rows;
+        size        = rows * cols;
+        size_cube_l = size * MAX_DISPARITY;
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_transform0, sizeof( cost_t ) * size ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_transform1, sizeof( cost_t ) * size ) );
+
+        int size_cube = size * MAX_DISPARITY;
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_cost, sizeof( uint8_t ) * size_cube ) );
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_img0, sizeof( uint8_t ) * size ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_img1, sizeof( uint8_t ) * size ) );
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_S, sizeof( uint16_t ) * size_cube_l ) );
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L0, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L1, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L2, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L3, sizeof( uint8_t ) * size_cube_l ) );
+#if PATH_AGGREGATION == 8
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L4, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L5, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L6, sizeof( uint8_t ) * size_cube_l ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_L7, sizeof( uint8_t ) * size_cube_l ) );
+#endif
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_disparity, sizeof( uint8_t ) * size ) );
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_disparity_filtered_uchar, sizeof( uint8_t ) * size ) );
+
+        CUDA_CHECK_RETURN( cudaMalloc( ( void** )&d_depth, sizeof( float ) * size ) );
+
+        h_disparity = new uint8_t[size];
+        h_depth = new float[size];
+    }
+    debug_log( "Copying images to the GPU" );
+    CUDA_CHECK_RETURN(
+    cudaMemcpyAsync( d_img0, left.ptr< uint8_t >( ), sizeof( uint8_t ) * size, cudaMemcpyHostToDevice, stream1 ) );
+    CUDA_CHECK_RETURN(
+    cudaMemcpyAsync( d_img1, right.ptr< uint8_t >( ), sizeof( uint8_t ) * size, cudaMemcpyHostToDevice, stream1 ) );
+
+    cudaEvent_t start, stop;
+    cudaEventCreate( &start );
+    cudaEventCreate( &stop );
+    cudaEventRecord( start, 0 );
+
+    dim3 block_size;
+    block_size.x = 32;
+    block_size.y = 32;
+
+    dim3 grid_size;
+    grid_size.x = ( cols + block_size.x - 1 ) / block_size.x;
+    grid_size.y = ( rows + block_size.y - 1 ) / block_size.y;
+
+    debug_log( "Calling CSCT" );
+    CenterSymmetricCensusKernelSM2<<< grid_size, block_size, 0, stream1 >>>(
+    d_img0, d_img1, d_transform0, d_transform1, rows, cols );
+
+    // Hamming distance
+    CUDA_CHECK_RETURN( cudaStreamSynchronize( stream1 ) );
+    debug_log( "Calling Hamming Distance" );
+    HammingDistanceCostKernel<<< rows, MAX_DISPARITY, 0, stream2 >>>(
+    d_transform0, d_transform1, d_cost, rows, cols );
+
+    // Cost Aggregation
+    const int PIXELS_PER_BLOCK       = COSTAGG_BLOCKSIZE / WARP_SIZE;
+    const int PIXELS_PER_BLOCK_HORIZ = COSTAGG_BLOCKSIZE_HORIZ / WARP_SIZE;
+
+    debug_log( "Calling Left to Right" );
+    CostAggregationKernel_LeftToRight<<< ( rows + PIXELS_PER_BLOCK_HORIZ - 1 ) / PIXELS_PER_BLOCK_HORIZ, COSTAGG_BLOCKSIZE_HORIZ, 0, stream1 >>>(
+    d_cost, d_L0, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    debug_log( "Calling Right to Left" );
+    CostAggregationKernel_RightToLeft<<< ( rows + PIXELS_PER_BLOCK_HORIZ - 1 ) / PIXELS_PER_BLOCK_HORIZ, COSTAGG_BLOCKSIZE_HORIZ, 0, stream2 >>>(
+    d_cost, d_L1, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    debug_log( "Calling Up to Down" );
+    CostAggregationKernel_UpToDown<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream3 >>>(
+    d_cost, d_L2, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    CUDA_CHECK_RETURN( cudaDeviceSynchronize( ) );
+
+    debug_log( "Calling Down to Up" );
+    CostAggregationKernel_DownToUp<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream4 >>>(
+    d_cost, d_L3, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+#if PATH_AGGREGATION == 8
+
+    debug_log( "Calling Diagonal Down to Up, Left to Right" );
+    CostAggregationKernel_DiagonalDownUpLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream1 >>>(
+    d_cost, d_L4, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    debug_log( "Calling Diagonal Up to Down, Left to Right" );
+    CostAggregationKernel_DiagonalUpDownLeftRight<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream2 >>>(
+    d_cost, d_L5, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    debug_log( "Calling Diagonal Down to Up, Right to Left" );
+    CostAggregationKernel_DiagonalDownUpRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream3 >>>(
+    d_cost, d_L6, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+
+    debug_log( "Calling Diagonal Up to Down, Right to Left" );
+    CostAggregationKernel_DiagonalUpDownRightLeft<<< ( cols + PIXELS_PER_BLOCK - 1 ) / PIXELS_PER_BLOCK, COSTAGG_BLOCKSIZE, 0, stream4 >>>(
+    d_cost, d_L7, p1, p2, rows, cols, d_transform0, d_transform1, d_disparity, d_L0, d_L1, d_L2, d_L3, d_L4, d_L5, d_L6 );
+#endif
+
+    debug_log( "Calling Median Filter" );
+    MedianFilter3x3GetDepth<<< ( size + MAX_DISPARITY - 1 ) / MAX_DISPARITY, MAX_DISPARITY, 0, stream4 >>>(
+    d_disparity, d_depth, rows, cols, FbaseLine);
+
+    cudaEventRecord( stop, 0 );
+    CUDA_CHECK_RETURN( cudaDeviceSynchronize( ) );
+    cudaEventElapsedTime( elapsed_time_ms, start, stop );
+
+    cudaEventDestroy( start );
+    cudaEventDestroy( stop );
+
+    debug_log( "Copying final disparity to CPU" );
+    CUDA_CHECK_RETURN(
+    cudaMemcpy( h_depth, d_depth, sizeof( float ) * size, cudaMemcpyDeviceToHost ) );
+
+    depth.data = ( unsigned char*) h_depth;
+}
+
 
 void
 compute_disparity_method2( cv::Mat left, cv::Mat right, cv::Mat& disparity, float* elapsed_time_ms )

@@ -38,8 +38,8 @@ sensor_msgs::Image image_ros;
 ros::Time image_time;
 bool is_image_ready = false;
 
-const int limit_left   = 30;
-const int limit_right  = 230;
+int limit_left   = 30;
+int limit_right  = 230;
 const double max_depth = 15.0;
 const double min_depth = 0.4;
 
@@ -99,9 +99,11 @@ stereo_sgbm( )
     sys_utils::tic::TicTocPart sgm_tic;
 
     float elapsed_time_ms;
-    compute_disparity_method2( image_left, image_right, disparityImage, &elapsed_time_ms );
+//    compute_disparity_method2( image_left, image_right, disparityImage, &elapsed_time_ms );
 
-    getDepthImage( disparityImage, depthImage );
+//    getDepthImage( disparityImage, depthImage );
+
+    compute_depth( image_left, image_right, depthImage, &elapsed_time_ms, fx_l * baseLine);
 
     toImageMsg( image_ros, depthImage, image_time );
 
@@ -146,6 +148,9 @@ main( int argc, char** argv )
     baseLine = _baseline;
     dis_min  = fx_l * baseLine / max_depth;
     dis_max  = fx_l * baseLine / min_depth;
+
+    limit_left   = 0.115 * image_col;
+    limit_right  = image_col - 0.115 * image_col;
 
     std::cout << "[INFO]image sub topic: " << image_sub_topic << std::endl;
     std::cout << "[INFO]fx fy: " << fx_l << " " << fy_l << std::endl;
